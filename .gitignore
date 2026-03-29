@@ -1,0 +1,12 @@
+# ============================================================
+# Worlifly - .gitignore raíz del monorepo
+# ============================================================
+# Este archivo excluye carpetas completas de los submódulos
+# para que cada uno gestione su propio .gitignore interno.
+# ============================================================
+
+# --- Backend (Spring Boot / Gradle) ---
+/worlify_backend/
+
+# --- Frontend ---
+/worlify_frontend/

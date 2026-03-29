@@ -1,0 +1,91 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "docker",
+      "name": "Docker: Run Compose (All Microservices)",
+      "request": "launch",
+      "compose": {
+        "action": "up",
+        "file": "${workspaceFolder}/docker-compose.yml"
+      }
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot (Local): ms-gateway",
+      "request": "launch",
+      "mainClass": "com.worlify.GatewayApplication",
+      "projectName": "ms-gateway",
+      "env": {
+        "MS_AUTH_URL": "http://localhost:8080",
+        "MS_SONGS_URL": "http://localhost:8081",
+        "MS_MINISTRIES_URL": "http://localhost:8082",
+        "MS_EVENTS_URL": "http://localhost:8084"
+      },
+      "preLaunchTask": "Docker Compose: Start Local Infra (Postgres, Mongo, Redis, Kafka)"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot (Local): ms-auth",
+      "request": "launch",
+      "mainClass": "com.worlify.WorlifyApplication",
+      "projectName": "ms-auth",
+      "envFile": "${workspaceFolder}/worlify_backend/ms-auth/.env",
+      "env": {
+        "POSTGRES_URL": "jdbc:postgresql://localhost:5432/worlify_auth",
+        "MONGO_URI": "mongodb://localhost:27017/worlify_auth_logs",
+        "REDIS_HOST": "localhost",
+        "KAFKA_SERVERS": "localhost:9092"
+      },
+      "preLaunchTask": "Docker Compose: Start Local Infra (Postgres, Mongo, Redis, Kafka)"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot (Local): ms-songs",
+      "request": "launch",
+      "mainClass": "com.worlify.songs.MsSongsApplication",
+      "projectName": "ms-songs",
+      "envFile": "${workspaceFolder}/worlify_backend/ms-songs/.env",
+      "env": {
+        "SONGS_DB_HOST": "localhost",
+        "SONGS_DB_PORT": "5432",
+        "SONGS_DB_NAME": "worlify_songs",
+        "REDIS_HOST": "localhost",
+        "KAFKA_SERVERS": "localhost:9092"
+      },
+      "preLaunchTask": "Docker Compose: Start Local Infra (Postgres, Mongo, Redis, Kafka)"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot (Local): ms-events",
+      "request": "launch",
+      "mainClass": "com.worlify.events.MsEventsApplication",
+      "projectName": "ms-events",
+      "envFile": "${workspaceFolder}/worlify_backend/ms-events/.env",
+      "env": {
+        "EVENTS_DB_HOST": "localhost",
+        "EVENTS_DB_PORT": "5432",
+        "EVENTS_DB_NAME": "worlify_events",
+        "REDIS_HOST": "localhost",
+        "KAFKA_SERVERS": "localhost:9092"
+      },
+      "preLaunchTask": "Docker Compose: Start Local Infra (Postgres, Mongo, Redis, Kafka)"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot (Local): ms-ministries",
+      "request": "launch",
+      "mainClass": "com.worlify.ministries.MsMinistriesApplication",
+      "projectName": "ms-ministries",
+      "envFile": "${workspaceFolder}/worlify_backend/ms-ministries/.env",
+      "env": {
+        "MINISTRIES_DB_HOST": "localhost",
+        "MINISTRIES_DB_PORT": "5432",
+        "MINISTRIES_DB_NAME": "worlify_ministries",
+        "REDIS_HOST": "localhost",
+        "KAFKA_SERVERS": "localhost:9092"
+      },
+      "preLaunchTask": "Docker Compose: Start Local Infra (Postgres, Mongo, Redis, Kafka)"
+    }
+  ]
+}

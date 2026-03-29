@@ -1,0 +1,283 @@
+services:
+  # API Gateway
+  ms-gateway:
+    build:
+      context: ./worlify_backend/ms-gateway
+      dockerfile: Dockerfile
+    container_name: worlify-ms-gateway
+    ports:
+      - "8083:8083"
+    environment:
+      MS_AUTH_URL: http://ms-auth:8080
+      MS_SONGS_URL: http://ms-songs:8081
+      MS_MINISTRIES_URL: http://ms-ministries:8082
+      MS_EVENTS_URL: http://ms-events:8084
+    depends_on:
+      - ms-auth
+      - ms-songs
+      - ms-ministries
+      - ms-events
+    networks:
+      - worlify-network
+
+  # Microservice: Auth
+  ms-auth:
+    build:
+      context: ./worlify_backend/ms-auth
+      dockerfile: Dockerfile
+    container_name: worlify-ms-auth
+    env_file:
+      - ./worlify_backend/ms-auth/.env
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/worlify_auth
+      MONGO_URI: mongodb://mongodb:27017/worlify_auth_logs
+      REDIS_HOST: redis
+      KAFKA_SERVERS: kafka:29092
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - worlify-network
+
+  # Microservice: Users
+  ms-users:
+    build:
+      context: ./worlify_backend/ms-users
+      dockerfile: Dockerfile
+    container_name: worlify-ms-users
+    env_file:
+      - ./worlify_backend/ms-users/.env
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/worlify_users
+      REDIS_HOST: redis
+      KAFKA_SERVERS: kafka:29092
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - worlify-network
+
+  # Microservice: Songs
+  ms-songs:
+    build:
+      context: ./worlify_backend/ms-songs
+      dockerfile: Dockerfile
+    container_name: worlify-ms-songs
+    env_file:
+      - ./worlify_backend/ms-songs/.env
+    environment:
+      SONGS_DB_HOST: postgres
+      SONGS_DB_PORT: 5432
+      SONGS_DB_NAME: worlify_songs
+      REDIS_HOST: redis
+      KAFKA_SERVERS: kafka:29092
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - worlify-network
+
+  # Microservice: Events
+  ms-events:
+    build:
+      context: ./worlify_backend/ms-events
+      dockerfile: Dockerfile
+    container_name: worlify-ms-events
+    env_file:
+      - ./worlify_backend/ms-events/.env
+    environment:
+      EVENTS_DB_HOST: postgres
+      EVENTS_DB_PORT: 5432
+      EVENTS_DB_NAME: worlify_events
+      REDIS_HOST: redis
+      KAFKA_SERVERS: kafka:29092
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - worlify-network
+
+  # Microservice: Ministries
+  ms-ministries:
+    build:
+      context: ./worlify_backend/ms-ministries
+      dockerfile: Dockerfile
+    container_name: worlify-ms-ministries
+    env_file:
+      - ./worlify_backend/ms-ministries/.env
+    environment:
+      MINISTRIES_DB_HOST: postgres
+      MINISTRIES_DB_PORT: 5432
+      MINISTRIES_DB_NAME: worlify_ministries
+      REDIS_HOST: redis
+      KAFKA_SERVERS: kafka:29092
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - worlify-network
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./worlify_frontend
+      dockerfile: Dockerfile
+    container_name: worlify-frontend
+    ports:
+      - "80:80"
+    environment:
+      - API_URL=http://localhost:8080/api/v1
+      - PRODUCTION=false
+    depends_on:
+      - ms-auth
+    networks:
+      - worlify-network
+
+  # PostgreSQL Database (shared instance, isolated databases per MS)
+  postgres:
+    image: postgres:16-alpine
+    container_name: worlify-postgres
+    environment:
+      POSTGRES_USER: worlify
+      POSTGRES_PASSWORD: worlify123
+      POSTGRES_DB: worlify_auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - worlify-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U worlify"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB (shared instance, isolated databases per MS)
+  mongodb:
+    image: mongo:7-jammy
+    container_name: worlify-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: worlify_auth_logs
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - ./infra/mongo/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - worlify-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: worlify-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - worlify-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka (KRaft mode — no Zookeeper)
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: worlify-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qg
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - worlify-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9092",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Kafka UI Monitor
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: worlify-kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: worlify-local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - worlify-network
+
+networks:
+  worlify-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  mongodb-data:
+  redis-data:
+  kafka-data:
