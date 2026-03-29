@@ -10,3 +10,8 @@
 
 # --- Frontend ---
 /worlify_frontend/
+
+# --- OpenJDK ---
+.java-version
+.jdks/
+/openJdk-*/
