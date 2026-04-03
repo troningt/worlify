@@ -15,8 +15,3 @@
 .java-version
 .jdks/
 /openJdk-*/
-
-# --- OpenJDK ---
-.java-version
-.jdks/
-/openJdk-*/
