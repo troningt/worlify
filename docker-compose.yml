@@ -12,6 +12,7 @@ services:
       MS_SONGS_URL: http://ms-songs:8081
       MS_MINISTRIES_URL: http://ms-ministries:8082
       MS_EVENTS_URL: http://ms-events:8084
+      JAVA_OPTS: "-Xms64m -Xmx192m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       - ms-auth
       - ms-songs
@@ -19,6 +20,15 @@ services:
       - ms-events
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '1.0'
+        reservations:
+          memory: 64M
+          cpus: '0.25'
+    restart: on-failure
 
   # Microservice: Auth
   ms-auth:
@@ -33,6 +43,7 @@ services:
       MONGO_URI: mongodb://mongodb:27017/worlify_auth_logs
       REDIS_HOST: redis
       KAFKA_SERVERS: kafka:29092
+      JAVA_OPTS: "-Xms128m -Xmx320m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     ports:
       - "8080:8080"
     depends_on:
@@ -46,6 +57,15 @@ services:
         condition: service_healthy
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 448M
+          cpus: '1.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    restart: on-failure
 
   # Microservice: Users
   ms-users:
@@ -59,6 +79,7 @@ services:
       POSTGRES_URL: jdbc:postgresql://postgres:5432/worlify_users
       REDIS_HOST: redis
       KAFKA_SERVERS: kafka:29092
+      JAVA_OPTS: "-Xms128m -Xmx320m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     ports:
       - "8085:8085"
     depends_on:
@@ -70,6 +91,15 @@ services:
         condition: service_healthy
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 448M
+          cpus: '1.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    restart: on-failure
 
   # Microservice: Songs
   ms-songs:
@@ -85,6 +115,7 @@ services:
       SONGS_DB_NAME: worlify_songs
       REDIS_HOST: redis
       KAFKA_SERVERS: kafka:29092
+      JAVA_OPTS: "-Xms128m -Xmx320m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     ports:
       - "8081:8081"
     depends_on:
@@ -96,6 +127,15 @@ services:
         condition: service_healthy
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 448M
+          cpus: '1.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    restart: on-failure
 
   # Microservice: Events
   ms-events:
@@ -111,6 +151,7 @@ services:
       EVENTS_DB_NAME: worlify_events
       REDIS_HOST: redis
       KAFKA_SERVERS: kafka:29092
+      JAVA_OPTS: "-Xms128m -Xmx320m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     ports:
       - "8084:8084"
     depends_on:
@@ -122,6 +163,15 @@ services:
         condition: service_healthy
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 448M
+          cpus: '1.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    restart: on-failure
 
   # Microservice: Ministries
   ms-ministries:
@@ -137,6 +187,7 @@ services:
       MINISTRIES_DB_NAME: worlify_ministries
       REDIS_HOST: redis
       KAFKA_SERVERS: kafka:29092
+      JAVA_OPTS: "-Xms128m -Xmx320m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     ports:
       - "8082:8082"
     depends_on:
@@ -148,6 +199,15 @@ services:
         condition: service_healthy
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 448M
+          cpus: '1.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    restart: on-failure
 
   # Frontend Application
   frontend:
@@ -164,8 +224,17 @@ services:
       - ms-auth
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+        reservations:
+          memory: 32M
+          cpus: '0.1'
+    restart: on-failure
 
-  # PostgreSQL Database (shared instance, isolated databases per MS)
+  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: worlify-postgres
@@ -173,6 +242,16 @@ services:
       POSTGRES_USER: worlify
       POSTGRES_PASSWORD: worlify123
       POSTGRES_DB: worlify_auth
+      # Limitar memoria de PostgreSQL
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    command: >
+      postgres
+        -c shared_buffers=128MB
+        -c effective_cache_size=256MB
+        -c maintenance_work_mem=32MB
+        -c checkpoint_completion_target=0.9
+        -c wal_buffers=8MB
+        -c max_connections=50
     ports:
       - "5432:5432"
     volumes:
@@ -180,18 +259,28 @@ services:
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: '1.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U worlify"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: on-failure
 
-  # MongoDB (shared instance, isolated databases per MS)
+  # MongoDB
   mongodb:
     image: mongo:7-jammy
     container_name: worlify-mongodb
     environment:
       MONGO_INITDB_DATABASE: worlify_auth_logs
+    command: mongod --wiredTigerCacheSizeGB 0.25
     ports:
       - "27017:27017"
     volumes:
@@ -199,29 +288,48 @@ services:
       - ./infra/mongo/init:/docker-entrypoint-initdb.d:ro
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: '1.0'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: on-failure
 
   # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: worlify-redis
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 160M
+          cpus: '0.5'
+        reservations:
+          memory: 32M
+          cpus: '0.1'
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: on-failure
 
-  # Kafka (KRaft mode — no Zookeeper)
+  # Kafka (KRaft mode)
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: worlify-kafka
@@ -241,21 +349,33 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qg
+      # Limitar heap de la JVM de Kafka
+      KAFKA_HEAP_OPTS: "-Xms256m -Xmx512m"
+      KAFKA_JVM_PERFORMANCE_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+      # Reducir retención de logs para dev
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_SEGMENT_BYTES: 536870912
+      # Reduce coordinator election delay on startup (dev only)
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     volumes:
       - kafka-data:/var/lib/kafka/data
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 640M
+          cpus: '2.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
     healthcheck:
-      test:
-        [
-          "CMD",
-          "kafka-broker-api-versions",
-          "--bootstrap-server",
-          "localhost:9092",
-        ]
-      interval: 30s
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 15s
       timeout: 10s
-      retries: 5
+      retries: 10
+      start_period: 30s
+    restart: on-failure
 
   # Kafka UI Monitor
   kafka-ui:
@@ -271,6 +391,15 @@ services:
         condition: service_healthy
     networks:
       - worlify-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+    restart: on-failure
 
 networks:
   worlify-network:
