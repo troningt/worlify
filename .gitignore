@@ -1,5 +1,5 @@
 # ============================================================
-# Worlifly - .gitignore raíz del monorepo
+# Worlify - .gitignore raíz del monorepo
 # ============================================================
 # Este archivo excluye carpetas completas de los submódulos
 # para que cada uno gestione su propio .gitignore interno.
@@ -15,3 +15,29 @@
 .java-version
 .jdks/
 /openJdk-*/
+
+# --- Docker ---
+/docker/*
+
+# --- IDE ---
+.idea/
+
+# --- Logs ---
+*.log
+
+# --- VSCode ---
+.vscode/
+
+# --- Jetbrains ---
+.jetBrains/
+
+# --- Local Settings ---
+.settings.local.json
+
+# --- Dirty Files ---
+.DS_Store
+.gradle-cache/
+dirty-files
+
+# --- Claude ---
+.claude/
