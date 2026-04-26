@@ -6,10 +6,10 @@
 # ============================================================
 
 # --- Backend (Spring Boot / Gradle) ---
-/worlify_backend/
+#/worlify_backend/
 
 # --- Frontend ---
-/worlify_frontend/
+#/worlify_frontend/
 
 # --- OpenJDK ---
 .java-version
@@ -40,4 +40,4 @@
 dirty-files
 
 # --- Claude ---
-.claude/
+#.claude/

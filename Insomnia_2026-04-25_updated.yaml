@@ -1,0 +1,3099 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Worlify API
+meta:
+  id: wrk_89276b0dec4b4b4c865791f89d2f5ac3
+  created: 1768910736894
+  modified: 1775580000000
+  description: API updated
+collection:
+  - name: Auth
+    meta:
+      id: fld_1d47e4d88c164537a69a76a511ad3d3c
+      created: 1769093268431
+      modified: 1775580000000
+      sortKey: -1769093268431
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/auth/register"
+        name: Register
+        meta:
+          id: req_287f4b4042ad4f36802eca82aa376a5a
+          created: 1768923754842
+          modified: 1777141683770
+          isPrivate: false
+          description: ""
+          sortKey: -1769093273372
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "user.drums@gmail.com",
+            	"password": "UserPass@123",
+            	"firstName": "Camilo",
+            	"lastName": "Bacilo"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        scripts:
+          afterResponse: "\n"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/login"
+        name: Login
+        meta:
+          id: req_16cbd0fdaeff45a4adcee83a0157f0a1
+          created: 1769093293401
+          modified: 1774996429439
+          isPrivate: false
+          description: ""
+          sortKey: -1769002005136.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "user.drums@gmail.com",
+            	"password": "UserPass@123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            const accessToken = response.access_token;
+            const userId = response.user_id;
+            if (accessToken) {
+            	insomnia.environment.set("bearerToken", accessToken);
+            	insomnia.environment.set("userId", userId);
+            	console.log("Access Token guardado correctamente");
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/refresh"
+        name: Refresh Token
+        meta:
+          id: req_aa01bb02cc03dd04ee05ff06aa07bb08
+          created: 1775580000001
+          modified: 1775580000001
+          isPrivate: false
+          description: |
+            Renueva el access token usando el refresh token.
+            El refresh token se obtiene en la respuesta del Login.
+          sortKey: -1769002005000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "refreshToken": "{{ _.refreshToken }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/switch-ministry"
+        name: Switch Ministry
+        meta:
+          id: req_bb02cc03dd04ee05ff06aa07bb08cc09
+          created: 1775580000002
+          modified: 1775580000002
+          isPrivate: false
+          description: |
+            Re-emite el JWT con un ministryId diferente como activo.
+            Útil para usuarios que pertenecen a múltiples ministerios.
+          sortKey: -1769002004900
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "ministryId": "{{ _.ministryId }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/verify-otp"
+        name: Verify OTP
+        meta:
+          id: req_cc03dd04ee05ff06aa07bb08cc09dd10
+          created: 1775580000003
+          modified: 1775580000003
+          isPrivate: false
+          description: |
+            Verifica el código OTP enviado por email sin resetear la contraseña.
+            Útil para validar que el código es correcto antes de mostrar el formulario de reset.
+          sortKey: -1769002004800
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "user.drums@gmail.com",
+              "code": "123456"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{domain}}/api/v1/auth/logout"
+        name: Logout
+        meta:
+          id: req_3d3d9fa7ff604167b917f054ba4ef87e
+          created: 1769096971357
+          modified: 1769188940775
+          isPrivate: false
+          description: ""
+          sortKey: -1768956371018.75
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{domain}}/api/v1/auth/forgot-password"
+        name: Forgot Password
+        meta:
+          id: req_5182545ff0884c2693134440bba171e7
+          created: 1769975671453
+          modified: 1770340711701
+          isPrivate: false
+          description: ""
+          sortKey: -1768933553959.875
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "roning1.0@gmail.com"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{domain}}/api/v1/auth/reset-password"
+        name: Reset Password
+        meta:
+          id: req_86cbe269fe334690b79632bb0bc36f12
+          created: 1770469381648
+          modified: 1770469419441
+          isPrivate: false
+          description: ""
+          sortKey: -1768922145430.4375
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "email": "user@example.com",
+                "code": "123456",
+                "new_password": "newSecurePassword123!"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{domain}}/api/v1/health"
+        name: Health Check
+        meta:
+          id: req_f0a7b0d57c2b4227b94ebb10b9ec25a5
+          created: 1769984700032
+          modified: 1769984725011
+          isPrivate: false
+          description: ""
+          sortKey: -1769093273472
+        method: GET
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Health
+    meta:
+      id: fld_9a6a6a95c1cf4ba6986b7e55372096a3
+      created: 1773619778841
+      modified: 1774320096335
+      sortKey: -1769002002666
+      description: Estado del microservicio
+    children:
+      - url: "{{ _.base_url }}/health"
+        name: Estado del servicio
+        meta:
+          id: req_455e7072d2a4431cae32dc003e6328e0
+          created: 1773619778847
+          modified: 1773619778847
+          isPrivate: false
+          description: ""
+          sortKey: -1773619778847
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Events - Events
+    meta:
+      id: fld_d964f4c8dda74ff191a89316e1f49157
+      created: 1774267752247
+      modified: 1774394345775
+      sortKey: -1774267752247
+      description: Gestión de eventos del ministerio
+    children:
+      - url: "{{ _.base_url }}/events"
+        name: Listar eventos del mes
+        meta:
+          id: req_6966abb52ed74fbbaf8df1a0c01322ee
+          created: 1774267752250
+          modified: 1774267752250
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752250
+        method: GET
+        parameters:
+          - name: year
+            value: "2026"
+            disabled: false
+          - name: month
+            value: "3"
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/next"
+        name: Próximo evento del ministerio
+        meta:
+          id: req_f0a5ce83e1604d62b374b128c293c917
+          created: 1774267752251
+          modified: 1774267752251
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752251
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events"
+        name: Crear evento
+        meta:
+          id: req_fde15408c50545cc929ae1728a7d08d5
+          created: 1774267752251
+          modified: 1774394205173
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752251
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Culto del domingo",
+              "type": "WORSHIP",
+              "date": "2026-05-04",
+              "time": "09:00",
+              "location": "Auditorio Principal",
+              "notes": "Preparar ensayo previo"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/{{ _.id }}"
+        name: Detalle de un evento
+        meta:
+          id: req_0bee0ae3d2c64147ab6a3fce40eb4f0c
+          created: 1774267752252
+          modified: 1774267752252
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752252
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/{{ _.id }}"
+        name: Editar evento
+        meta:
+          id: req_4fa872f99e464e51ad161670493392c1
+          created: 1774267752253
+          modified: 1774267752253
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752253
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "string",
+              "type": "string",
+              "date": "string",
+              "time": "string",
+              "location": "string",
+              "notes": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/{{ _.id }}/songs"
+        name: Canciones asignadas al evento
+        meta:
+          id: req_811836400b4743c098868ead4d5a1c18
+          created: 1774267752254
+          modified: 1774267752254
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752254
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/{{ _.id }}"
+        name: Eliminar evento
+        meta:
+          id: req_85fed2f8fd7147008f13bd9d98c7e89f
+          created: 1774267752254
+          modified: 1774267752254
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752254
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/{{ _.id }}/songs"
+        name: Asignar canción al evento
+        meta:
+          id: req_077e196915ee49be89b1da929342675f
+          created: 1774267752255
+          modified: 1774267752255
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752255
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "songId": "string",
+              "songTitle": "string",
+              "usedKey": "G"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/events/{{ _.id }}/songs/{{ _.usageId }}"
+        name: Quitar canción del evento
+        meta:
+          id: req_7a06dbe38f7e41d0917e1c0d6f0e565a
+          created: 1774267752256
+          modified: 1774267752256
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752256
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Rehearsals - Events
+    meta:
+      id: fld_38261b1e5c1f4daea945292300deca1d
+      created: 1774267752248
+      modified: 1774394350613
+      sortKey: -1774267752248
+      description: Gestión de ensayos
+    children:
+      - url: "{{ _.base_url }}/rehearsals"
+        name: Ensayos del mes
+        meta:
+          id: req_4b1a91907ac947768f519dafe4c67b55
+          created: 1774267752257
+          modified: 1774267752257
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752257
+        method: GET
+        parameters:
+          - name: year
+            value: "0"
+            disabled: false
+          - name: month
+            value: "0"
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals"
+        name: Crear ensayo
+        meta:
+          id: req_af27e37075e34045b4c5ae964eb3612b
+          created: 1774267752262
+          modified: 1774267752262
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752262
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "date": "string",
+              "time": "string",
+              "location": "string",
+              "confirmed": true,
+              "attendeeIds": [
+                "string"
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals/{{ _.id }}"
+        name: Editar ensayo
+        meta:
+          id: req_95fd39173ced486d9b324d5f2b013762
+          created: 1774267752263
+          modified: 1774267752263
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752263
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "date": "string",
+              "time": "string",
+              "location": "string",
+              "confirmed": true,
+              "attendeeIds": [
+                "string"
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals/{{ _.id }}"
+        name: Eliminar ensayo
+        meta:
+          id: req_09b2da42b4ec4ef499f479dca80e0ecc
+          created: 1774267752264
+          modified: 1774267752264
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752264
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Calendar - Events
+    meta:
+      id: fld_fa7f91c0b5854e8c9e4fd45897266f62
+      created: 1774267752249
+      modified: 1774394374480
+      sortKey: -1774267752249
+      description: Vista calendario de canciones por mes/día
+    children:
+      - url: "{{ _.base_url }}/calendar/songs"
+        name: Vista calendario mensual de canciones
+        meta:
+          id: req_b3a12991490d4c15af392ced1814678b
+          created: 1774267752264
+          modified: 1774267752264
+          isPrivate: false
+          description: |
+            Retorna los días del mes que tienen canciones asignadas a eventos,
+            agrupados por (fecha, eventId).
+          sortKey: -1774267752264
+        method: GET
+        parameters:
+          - name: year
+            value: "0"
+            disabled: false
+          - name: month
+            value: "0"
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/calendar/songs/{{ _.date }}"
+        name: Canciones asignadas a una fecha específica
+        meta:
+          id: req_31cd247f86a24e2089e7a5a3db5cacf9
+          created: 1774267752265
+          modified: 1774267752265
+          isPrivate: false
+          description: ""
+          sortKey: -1774267752265
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Songs
+    meta:
+      id: fld_cba25cc921054673a4c4fcc20a1699be
+      created: 1774306077618
+      modified: 1775580000000
+      sortKey: -1774306077618
+      description: CRUD de canciones del ministerio
+    children:
+      - url: "{{ _.base_url }}/songs"
+        name: Crear canción
+        meta:
+          id: req_61655d1c4f2a4321a417619430989ecc
+          created: 1774306077623
+          modified: 1774384911688
+          isPrivate: false
+          description: >
+            **Estado: IMPLEMENTED** — Card 4 (Lista de Canciones).
+
+            Crea una nueva canción en el ministerio. Requiere rol `LEADER` o
+            `ADMIN`.
+
+            El `ministryId` y `createdBy` se extraen del JWT.
+          sortKey: -1774306077623
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "title": "Amazing Grace",
+              "artist": "John Newton",
+              "album": "Hymns Collection",
+              "originalKey": "G",
+              "bpm": 75,
+              "timeSignature": "3/4",
+              "durationSeconds": 240,
+              "genre": "Gospel",
+              "language": "en",
+              "lyrics": "Amazing grace, how sweet the sound...",
+              "leaderNotes": "Empezar suave, crescendo en el coro",
+              "isPublic": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            const idSong = response.id;
+
+            if (idSong) {
+            		insomnia.environment.set("idSong", idSong);
+            		console.log("Id de canción guardado correctamente");
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs"
+        name: Listar canciones con filtros y paginación
+        meta:
+          id: req_afae39dbbe304240ae420f5d2deef3fe
+          created: 1774306077623
+          modified: 1774391307951
+          isPrivate: false
+          description: Lista paginada de canciones del ministerio. El `ministryId` se
+            extrae del JWT.
+          sortKey: -1774306077623
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+            disabled: true
+          - name: limit
+            value: "20"
+            disabled: true
+          - name: search
+            value: string
+            disabled: true
+          - name: key
+            value: string
+            disabled: true
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            if (response.length > 0) {
+            	const idSong = response[0].id;
+
+            	if (idSong) {
+            			insomnia.environment.set("idSong", idSong);
+            			console.log("Id de canción guardado correctamente");
+            	}
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/search"
+        name: Buscar canciones por título/artista
+        meta:
+          id: req_dd04ee05ff06aa07bb08cc09dd10ee11
+          created: 1775580000004
+          modified: 1775580000004
+          isPrivate: false
+          description: |
+            Búsqueda full-text de canciones por título o artista.
+            Filtro opcional por tonalidad (originalKey).
+            Requiere rol autenticado.
+          sortKey: -1774306077622
+        method: GET
+        parameters:
+          - name: q
+            value: "Amazing"
+            disabled: false
+          - name: key
+            value: "G"
+            disabled: true
+          - name: page
+            value: "1"
+            disabled: true
+          - name: limit
+            value: "20"
+            disabled: true
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/latest"
+        name: Última canción nueva del ministerio
+        meta:
+          id: req_908e84bb107c487f9e1185eb032a1ece
+          created: 1774306077624
+          modified: 1774384798667
+          isPrivate: false
+          description: >
+            **Estado: IMPLEMENTED** — Card 1 (Última Canción Nueva).
+
+            Retorna la canción más recientemente creada en el ministerio del
+            usuario autenticado.
+
+            El campo `isNew` indica si tiene menos de 7 días desde su creación.
+          sortKey: -1774306077624
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}"
+        name: Detalle de una canción
+        meta:
+          id: req_ee05ff06aa07bb08cc09dd10ee11ff12
+          created: 1775580000005
+          modified: 1775580000005
+          isPrivate: false
+          description: |
+            Retorna todos los campos de una canción específica por ID.
+            Incluye título, artista, tonalidad, BPM, letra, notas del líder, etc.
+          sortKey: -1774306077623.5
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}"
+        name: Editar canción
+        meta:
+          id: req_9acef410f29340358416c11adc884be5
+          created: 1774306077626
+          modified: 1774384952341
+          isPrivate: false
+          description: >
+            **Estado: PLANNED** — Card 4 (Lista de Canciones).
+
+            Actualiza los datos de una canción existente. Requiere rol `LEADER`
+            o `ADMIN`.
+
+            Solo se actualizan los campos enviados (los campos `null` se
+            ignoran).
+          sortKey: -1774306077626
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "title": "Cancion #2",
+              "artist": "John Newton",
+              "album": "Hymns Collection",
+              "originalKey": "G",
+              "bpm": 75,
+              "timeSignature": "3/4",
+              "durationSeconds": 240,
+              "genre": "Gospel",
+              "language": "en",
+              "lyrics": "Amazing grace, how sweet the sound...",
+              "leaderNotes": "Empezar suave, crescendo en el coro",
+              "isPublic": false
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}"
+        name: Eliminar canción
+        meta:
+          id: req_1b381debecc84264bc53563f8a614bd6
+          created: 1774306077627
+          modified: 1774384967584
+          isPrivate: false
+          description: |
+            **Estado: IMPLEMENTED** — Card 4 (Lista de Canciones).
+
+            Elimina permanentemente una canción. Requiere rol `ADMIN`.
+          sortKey: -1774306077627
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/audio"
+        name: Todos los tracks de audio de la canción
+        meta:
+          id: req_e5c5932a6cfd4f2aa93e6a7a0fa9eb23
+          created: 1774306077628
+          modified: 1774371140213
+          isPrivate: false
+          description: >
+            **Estado: IMPLEMENTED**
+
+            Retorna todos los tracks de audio disponibles para la canción (FULL,
+            VOCALS, DRUMS, PIANO, GUITAR, BASS)
+
+            con sus URLs de S3. Solo incluye los tracks que han sido subidos.
+          sortKey: -1774306077628
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/audio/VOCALS"
+        name: Track de audio específico por tipo
+        meta:
+          id: req_4ed33dd47d1b41f387b411f5b8ee0d4e
+          created: 1774388537433
+          modified: 1774391452250
+          isPrivate: false
+          description: >
+            **Estado: IMPLEMENTED**
+
+            Retorna el track de audio de un tipo específico (FULL, VOCALS,
+            DRUMS, PIANO, GUITAR, BASS)
+
+            con su URL de S3. Retorna 404 si ese tipo de track no ha sido subido
+            para la canción.
+          sortKey: -1774306077627.5
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/audio/FULL"
+        name: Guardar track de audio por tipo
+        meta:
+          id: req_bb5ed0c0347a43089606ede085c07ccd
+          created: 1774388768179
+          modified: 1774391432110
+          isPrivate: false
+          description: ""
+          sortKey: -1774306077627.25
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: file
+              fileName: C:\Users\ronny\Downloads\Phil Wickham - This Is Amazing Grace Official
+                Music Video.mp3
+              type: file
+            - name: durationSeconds
+              value: "214"
+              type: text
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/audio/FULL"
+        name: Eliminar track de audio por tipo
+        meta:
+          id: req_ff06aa07bb08cc09dd10ee11ff12aa13
+          created: 1775580000006
+          modified: 1775580000006
+          isPrivate: false
+          description: |
+            Elimina el track de audio del tipo especificado para la canción.
+            Tipos válidos: FULL, VOCALS, DRUMS, PIANO, GUITAR, BASS.
+            Requiere rol `LEADER` o `ADMIN`.
+            Cambia el tipo en la URL según el track a eliminar.
+          sortKey: -1774306077627.1
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/tags"
+        name: Tags distintos del ministerio
+        meta:
+          id: req_a6df16d110544e35836d9ccfd736c1f6
+          created: 1774306077642
+          modified: 1774306077642
+          isPrivate: false
+          description: Lista todos los tags únicos usados en el ministerio (para
+            autocomplete).
+          sortKey: -1774306077642
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/tags"
+        name: Tags de una canción
+        meta:
+          id: req_6a2a108a9eeb4e26a40481f30de2f8bb
+          created: 1774306077643
+          modified: 1774536255691
+          isPrivate: false
+          description: ""
+          sortKey: -1774306077643
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            const tag = response;
+
+            if (tag) {
+            		insomnia.environment.set("tag", tag);
+            		console.log("Id de canción guardado correctamente");
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/tags"
+        name: Agregar tag a una canción
+        meta:
+          id: req_8d868cf9f03d427dbd54140e91b0ce39
+          created: 1774306077643
+          modified: 1774370856864
+          isPrivate: false
+          description: >
+            El tag se normaliza a minúsculas. Si ya existe, la operación es
+            idempotente.
+
+            Requiere rol `ADMIN` o `LEADER`.
+          sortKey: -1774306077643
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "tag": "gospel"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/tags/{{ _.tag }}"
+        name: Eliminar tag de una canción
+        meta:
+          id: req_0474258efc364408b4cf3ad35990c55e
+          created: 1774306077644
+          modified: 1774370899544
+          isPrivate: false
+          description: ""
+          sortKey: -1774306077643
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/references"
+        name: Referencias externas de una canción
+        meta:
+          id: req_5f366083f926440180c093c43ebecfa0
+          created: 1774306077644
+          modified: 1774369422621
+          isPrivate: false
+          description: Retorna los links externos asociados (YouTube, Spotify, acordes,
+            etc.).
+          sortKey: -1774306077644
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            if (insomnia.response.code == 200) {
+            	const refId = response[0].id;
+
+            	if (refId) {
+            			insomnia.environment.set("refId", refId);
+            			console.log("Id de canción guardado correctamente");
+            	}
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/references/{{ _.refId }}"
+        name: Eliminar referencia externa
+        meta:
+          id: req_0aee5a1f9db141cba417ad74cdbaf00c
+          created: 1774306077645
+          modified: 1774355001795
+          isPrivate: false
+          description: ""
+          sortKey: -1774306077645
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/songs/{{ _.idSong }}/references"
+        name: Agregar referencia externa a una canción
+        meta:
+          id: req_84de64fca2f94b19bd9998e1dd463b96
+          created: 1774306077645
+          modified: 1774320420297
+          isPrivate: false
+          description: ""
+          sortKey: -1774306077645
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "type": "YOUTUBE",
+              "url": "https://open.spotify.com/track/abc123",
+              "description": "Versión original en Spotify"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            if (insomnia.response.code == 200) {
+            	const idRef = response.id;
+
+            	if (idRef) {
+            			insomnia.environment.set("refId", idRef);
+            			console.log("Referencia de canción guardado correctamente");
+            	}
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/team/{{ _.userId }}/vocal-range"
+        name: Crear / actualizar rango vocal de un usuario
+        meta:
+          id: req_c74c9670486545338758667dae026247
+          created: 1774306077646
+          modified: 1774394406162
+          isPrivate: false
+          description: Upsert del rango vocal. Requiere rol `ADMIN` o `LEADER`.
+          sortKey: -1774388623128
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "voiceType": "SOPRANO",
+              "minNote": "C4",
+              "maxNote": "G5"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/team/vocalists"
+        name: Vocalistas con rango vocal del ministerio
+        meta:
+          id: req_f54abc641e1140d08a3b61c1beacb894
+          created: 1774306077646
+          modified: 1774394397052
+          isPrivate: false
+          description: Lista todos los usuarios del ministerio que tienen rango vocal
+            registrado.
+          sortKey: -1774388623028
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Team Status
+        meta:
+          id: fld_d17e71d059e9444f90ba9439a6e227d2
+          created: 1774306077618
+          modified: 1774394449315
+          sortKey: -1774388623228
+          description: Estado de preparación del equipo por canción
+        children:
+          - url: "{{ _.base_url }}/songs/{{ _.idSong }}/team-status"
+            name: Estado de preparación del equipo
+            meta:
+              id: req_f032420624624e1fa535c0abe5c2758a
+              created: 1774306077629
+              modified: 1774533962045
+              isPrivate: false
+              description: >
+                **Estado: IMPLEMENTED** — Card 1 (Última Canción Nueva).
+
+                Lista el estado de preparación de todos los músicos del equipo
+                para una canción específica.
+              sortKey: -1774306077629
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.idSong }}/team-status"
+            name: Actualizar propio estado de preparación
+            meta:
+              id: req_e7a365a080bc453ca285e11058ffcf3f
+              created: 1774306077631
+              modified: 1774533952734
+              isPrivate: false
+              description: >
+                **Estado: IMPLEMENTED** — Card 1 (Última Canción Nueva — botón
+                "Ya la sé").
+
+                El músico autenticado actualiza su propio estado para una
+                canción.
+
+                El `userId` se extrae del JWT (no se pasa en el body).
+              sortKey: -1774306077631
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "status": "READY"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Notes
+        meta:
+          id: fld_5e82c1ada9cf434c8b3b542e66e0056f
+          created: 1774306077619
+          modified: 1774536305161
+          sortKey: -1774388623178
+          description: Notas del líder por canción/evento
+        children:
+          - url: "{{ _.base_url }}/songs/leader-notes?songId={{ _.idSong }}"
+            name: Notas del líder por canción y/o evento
+            meta:
+              id: req_6943f16c5bde42e581039c74ddec6e83
+              created: 1774306077625
+              modified: 1774536187835
+              isPrivate: false
+              description: >
+                **Estado: IMPLEMENTED** — Card 3 (Notas del Líder).
+
+                Lista todas las notas activas del líder. Se puede filtrar por
+                `songId` y/o `eventId`.
+              sortKey: -1774306077625
+            method: GET
+            parameters:
+              - name: songId
+                value: string
+                disabled: true
+              - name: eventId
+                value: string
+                disabled: true
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.idSong }}/notes"
+            name: Crear nota del líder
+            meta:
+              id: req_857240cdedb54542b5752ebc2c9509c1
+              created: 1774306077631
+              modified: 1774536300818
+              isPrivate: false
+              description: >
+                **Estado: IMPLEMENTED** — Card 3 (Notas del Líder).
+
+                Crea una nota asociada a la canción, opcionalmente vinculada a
+                un evento específico.
+
+                Requiere rol `LEADER` o `ADMIN`. El `authorId` se extrae del
+                JWT.
+              sortKey: -1774306077525
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "eventId": "832b6c66-712b-498e-9fc5-c79440eb077f",
+                  "content": "Empezar en Do, subir a Re en el puente"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            scripts:
+              afterResponse: |-
+                const response = insomnia.response.json();
+                const noteId = response.id;
+
+                if (noteId) {
+                		insomnia.environment.set("noteId", noteId);
+                		console.log("Id de nota guardado correctamente");
+                }
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.id }}/notes/{{ _.noteId }}"
+            name: Editar nota del líder
+            meta:
+              id: req_70e26629135e4b0eb22b46e5666b1eb4
+              created: 1774306077632
+              modified: 1774536326473
+              isPrivate: false
+              description: >
+                **Estado: PLANNED** — Card 3 (Notas del Líder — inline edit).
+
+                Actualiza el contenido de una nota existente. Requiere rol
+                `LEADER` o `ADMIN`.
+              sortKey: -1774306077632
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "content": "Contenido actualizado"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.id }}/notes/{{ _.noteId }}"
+            name: Eliminar nota del líder
+            meta:
+              id: req_9dc82ec7dd4e4086a0e9abde95f00187
+              created: 1774306077632
+              modified: 1774536332921
+              isPrivate: false
+              description: |
+                **Estado: IMPLEMENTED** — Card 3 (Notas del Líder).
+
+                Elimina una nota. Requiere rol `LEADER` o `ADMIN`.
+              sortKey: -1774306077632
+            method: DELETE
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Chords
+        meta:
+          id: fld_ee69a9778ff4461784eaf86e7558208b
+          created: 1774306077620
+          modified: 1774394456038
+          sortKey: -1774388623328
+          description: Archivos PDF de acordes por canción
+        children:
+          - url: "{{ _.base_url }}/songs/{{ _.id }}/chords"
+            name: Obtener acordes de una canción
+            meta:
+              id: req_c50e30b79d094f7d907d79b5494526ff
+              created: 1774306077633
+              modified: 1774306077633
+              isPrivate: false
+              description: Retorna la lista de PDFs de acordes asociados a la canción.
+              sortKey: -1774306077633
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.idSong }}/chords"
+            name: Subir / reemplazar PDF de acordes
+            meta:
+              id: req_141ce7465da941a38110575d5c4546e0
+              created: 1774306077634
+              modified: 1774533035677
+              isPrivate: false
+              description: >
+                Sube un archivo PDF con los acordes de la canción a S3/MinIO
+                (upsert).
+
+                Requiere rol `LEADER` o `ADMIN`.
+
+                El `uploadedBy` se extrae del JWT.
+
+                **Límites:** Máximo 10 MB. Solo formato PDF.
+              sortKey: -1774306077634
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: file
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\ronny\Downloads\prueba.pdf
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.idSong }}/chords/{{ _.chordsId }}"
+            name: Eliminar PDF de acordes
+            meta:
+              id: req_44467143d9cb46698f56803d80aea5c9
+              created: 1774306077634
+              modified: 1774533090575
+              isPrivate: false
+              description: Elimina el PDF de acordes de S3 y su registro en base de datos.
+              sortKey: -1774306077634
+            method: DELETE
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/{{ _.idSong }}/chords/download"
+            name: Descargar PDF de acordes
+            meta:
+              id: req_d52235c19ed741999b2e376648c823a8
+              created: 1774306077635
+              modified: 1774532887115
+              isPrivate: false
+              description: >
+                Retorna la URL firmada de S3/MinIO para descargar/visualizar el
+                PDF de acordes.
+              sortKey: -1774306077635
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Usage
+        meta:
+          id: fld_5e33b342806d432dbab942954886d07b
+          created: 1774306077621
+          modified: 1774394459517
+          sortKey: -1774388623428
+          description: Historial y frecuencia de uso de canciones
+        children:
+          - url: "{{ _.base_url }}/songs/unused"
+            name: Canciones sin uso reciente
+            meta:
+              id: req_ea1479f484904744879fda858bc930ff
+              created: 1774306077625
+              modified: 1774306077625
+              isPrivate: false
+              description: Lista canciones del ministerio que no han sido usadas en los
+                últimos N semanas.
+              sortKey: -1774306077625
+            method: GET
+            parameters:
+              - name: weeks
+                value: "4"
+                disabled: true
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/songs/usage"
+            name: Historial de uso de canciones por período
+            meta:
+              id: req_7ce6f25243f04596a1cf3e6ad11bd398
+              created: 1774306077626
+              modified: 1774306077626
+              isPrivate: false
+              description: Frecuencia de uso de canciones en el período seleccionado (mes o
+                trimestre).
+              sortKey: -1774306077626
+            method: GET
+            parameters:
+              - name: period
+                value: string
+                disabled: false
+              - name: year
+                value: "0"
+                disabled: false
+              - name: month
+                value: "0"
+                disabled: true
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Users
+    meta:
+      id: fld_799216f71f624fe296ca94282de6a625
+      created: 1774555395243
+      modified: 1775580000000
+      sortKey: -1774555395243
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/users/me"
+        name: Get User Profile
+        meta:
+          id: req_4bb1567e87db40ec87d6c0d39eb183b6
+          created: 1774555422862
+          modified: 1774614545962
+          isPrivate: false
+          description: ""
+          sortKey: -1774555430586
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me"
+        name: Update User Profile
+        meta:
+          id: req_c422fd74216f48c6bcbdf46039280855
+          created: 1774555422862
+          modified: 1774618933720
+          isPrivate: false
+          description: ""
+          sortKey: -1774555430686
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"firstName": "Camilo",
+            	"lastName": "Pardo",
+            	"phoneNumber": "573006825048"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/extended"
+        name: Update Extended Profile
+        meta:
+          id: req_aa13bb14cc15dd16ee17ff18aa19bb20
+          created: 1775580000007
+          modified: 1775580000007
+          isPrivate: false
+          description: |
+            Actualiza campos extendidos del perfil: bio y ciudad.
+            - bio: máximo 500 caracteres
+            - city: máximo 100 caracteres
+          sortKey: -1774555430636
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "bio": "Músico con 10 años de experiencia en ministerio de alabanza",
+              "city": "Bogotá"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/vocal-range"
+        name: Update My Vocal Range
+        meta:
+          id: req_bb14cc15dd16ee17ff18aa19bb20cc21
+          created: 1775580000008
+          modified: 1775580000008
+          isPrivate: false
+          description: |
+            El propio usuario actualiza su rango vocal.
+            Valores válidos de voiceType: SOPRANO, MEZZO_SOPRANO, ALTO, TENOR, BARITONE, BASS.
+            Nota: distinto de PATCH /team/{userId}/vocal-range que lo hace un ADMIN/LEADER sobre otro usuario.
+          sortKey: -1774555430586
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "voiceType": "TENOR",
+              "minNote": "C3",
+              "maxNote": "A4"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/notifications"
+        name: Update Notification Settings
+        meta:
+          id: req_cc15dd16ee17ff18aa19bb20cc21dd22
+          created: 1775580000009
+          modified: 1775580000009
+          isPrivate: false
+          description: |
+            Actualiza las preferencias de notificaciones del usuario autenticado.
+            Todos los campos son booleanos y opcionales (solo se actualizan los enviados).
+          sortKey: -1774555430486
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "emailEvents": true,
+              "pushEvents": true,
+              "emailInvitations": true,
+              "pushInvitations": false
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/social-links"
+        name: Update Social Links
+        meta:
+          id: req_dd16ee17ff18aa19bb20cc21dd22ee23
+          created: 1775580000010
+          modified: 1775580000010
+          isPrivate: false
+          description: |
+            Actualiza los links de redes sociales del usuario.
+            Todos los campos son opcionales. Enviar null para limpiar un link.
+          sortKey: -1774555430386
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "instagram": "https://instagram.com/usuario",
+              "youtube": "https://youtube.com/@canal",
+              "spotify": null,
+              "website": null
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/avatar"
+        name: Upload Avatar
+        meta:
+          id: req_9049a2ccc2e5480cb47a8d7892f66262
+          created: 1774555422863
+          modified: 1774745168775
+          isPrivate: false
+          description: ""
+          sortKey: -1774555430786
+        method: PATCH
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: file
+              value: ""
+              description: ""
+              disabled: false
+              fileName: C:\Users\ronny\Downloads\avatar.png
+              type: file
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/{{ _.userId }}/public"
+        name: Get Public Profile
+        meta:
+          id: req_ee17ff18aa19bb20cc21dd22ee23ff24
+          created: 1775580000011
+          modified: 1775580000011
+          isPrivate: false
+          description: |
+            Retorna el perfil público de cualquier usuario por ID.
+            Excluye: notificationSettings, campos privados.
+            Incluye: nombre, bio, ciudad, avatar (presigned URL), instrumentos, rango vocal, social links.
+            Auth opcional (no requerida).
+          sortKey: -1774555430286
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/instruments"
+        name: Replace Instruments
+        meta:
+          id: req_8139e2b416ab4cf8b6c8af556c8d8c30
+          created: 1774555422864
+          modified: 1774746587432
+          isPrivate: false
+          description: ""
+          sortKey: -1774555430886
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"instruments": ["GUITAR", "DRUMS"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/instruments/add"
+        name: Add Instrument
+        meta:
+          id: req_d8b6c13044884385b73a766465b6320d
+          created: 1774555422867
+          modified: 1774746648231
+          isPrivate: false
+          description: ""
+          sortKey: -1774555430986
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"instrument": "VOCALS"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/me/instruments/remove"
+        name: Remove Instrument
+        meta:
+          id: req_14756238fbed4ef7bde81c8487c0e837
+          created: 1774555422868
+          modified: 1774746668831
+          isPrivate: false
+          description: ""
+          sortKey: -1774555431086
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"instrument": "VOCALS"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Ministries
+    meta:
+      id: fld_a0336f5c28f745538adea1284fd24660
+      created: 1774746812685
+      modified: 1775580000000
+      sortKey: -1774746812685
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/ministries"
+        name: Crear ministerio
+        meta:
+          id: req_dfcf2718c4734e6bb4815272bcc7d99e
+          created: 1774746782077
+          modified: 1775070534253
+          isPrivate: false
+          description: >
+            Crea un nuevo ministerio. El usuario autenticado se registra
+            automáticamente
+
+            como miembro con rol `ADMIN`. Emite Kafka `ministry.created` y
+            `ministry.member.joined`.
+          sortKey: -1774746818911.5625
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Ministerio Adoración Vida",
+              "description": "string",
+              "churchName": "Iglesia Comunidad de Fe",
+              "timezone": "America/Bogota",
+              "defaultLanguage": "es"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            const ministryId = response.id;
+
+            if (ministryId) {
+            		insomnia.environment.set("ministryId", ministryId);
+            		console.log("Id de canción guardado correctamente");
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}"
+        name: Perfil del ministerio
+        meta:
+          id: req_20f65e39b11a4feeb0fb3bc4702772b0
+          created: 1774746782078
+          modified: 1774746844565
+          isPrivate: false
+          description: ""
+          sortKey: -1774746818913.125
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ministries/mine"
+        name: Ministerios del usuario autenticado
+        meta:
+          id: req_3a5e059f57644dc3874f5a0ac7839e9b
+          created: 1774746782078
+          modified: 1774747153291
+          isPrivate: false
+          description: Lista todos los ministerios a los que pertenece el usuario, con su
+            rol en cada uno.
+          sortKey: -1774746818916.25
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |
+            const response = insomnia.response.json();
+
+            if (response.length > 0) {
+            	const ministryId = response[0].id;
+
+            	if (ministryId) {
+            			insomnia.environment.set("ministryId", ministryId);
+            			console.log("Id de ministerio guardado correctamente");
+            	}
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}"
+        name: Editar ministerio
+        meta:
+          id: req_5cf23b458bed4173af9116da3bda5e26
+          created: 1774746782079
+          modified: 1774747197933
+          isPrivate: false
+          description: Actualiza nombre, descripción, iglesia y datos del ministerio.
+            Roles permitidos `ADMIN | LEADER`.
+          sortKey: -1774746818922.5
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Ministerio Adoración Vida",
+              "description": "Ministerio de alabanza y adoración",
+              "churchName": "Iglesia Comunidad de Fe",
+              "timezone": "America/Bogota",
+              "defaultLanguage": "es"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}"
+        name: Eliminar ministerio
+        meta:
+          id: req_0651daf00f1d4304bc849edc01fdda72
+          created: 1774746782080
+          modified: 1774746841173
+          isPrivate: false
+          description: Elimina el ministerio y todos sus registros. Solo `ADMIN`.
+            Operación irreversible.
+          sortKey: -1774746818935
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/logo"
+        name: Eliminar logo del ministerio
+        meta:
+          id: req_24b94363693043ada320aa4c47c9cf0e
+          created: 1774746782081
+          modified: 1774746840003
+          isPrivate: false
+          description: ""
+          sortKey: -1774746818960
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/logo"
+        name: Subir logo del ministerio
+        meta:
+          id: req_34b3df687b704d3b966979f40cd5f5a7
+          created: 1774746782081
+          modified: 1774748217947
+          isPrivate: false
+          description: Reemplaza el logo actual. Formatos aceptados jpg/png/webp, máx. 2
+            MB. Roles `ADMIN | LEADER`.
+          sortKey: -1774746819010
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: file
+              value: ""
+              description: ""
+              disabled: false
+              fileName: F:\Projects\Worlifly\visual\logo.png
+              type: file
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Members
+        meta:
+          id: fld_3297ca58849f4290b6921f258cee991d
+          created: 1774746782073
+          modified: 1774746823723
+          sortKey: -1774746818810
+          description: Gestión de miembros del ministerio
+        children:
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/members"
+            name: Listar miembros del ministerio
+            meta:
+              id: req_04894946ed7f4649af7c36e1cd196579
+              created: 1774746782082
+              modified: 1774746782082
+              isPrivate: false
+              description: ""
+              sortKey: -1774746782082
+            method: GET
+            parameters:
+              - name: role
+                value: string
+                disabled: true
+              - name: status
+                value: string
+                disabled: true
+              - name: page
+                value: "0"
+                disabled: true
+              - name: limit
+                value: "20"
+                disabled: true
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/members/{{ _.userId }}"
+            name: Detalle de un miembro
+            meta:
+              id: req_8acff8265d894ec3a2c52553bf14d38b
+              created: 1774746782083
+              modified: 1774986475128
+              isPrivate: false
+              description: ""
+              sortKey: -1774746782083
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/members"
+            name: Añadir miembro directamente
+            meta:
+              id: req_a054004f250848108b1e33945bcb64ed
+              created: 1774746782083
+              modified: 1774997938405
+              isPrivate: false
+              description: Añade un usuario existente al ministerio sin invitación. Roles
+                permitidos `ADMIN | LEADER`.
+              sortKey: -1774746782083
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "userId": "0f3e8a50-0ec8-40e1-bd29-6eb7264c5051",
+                  "role": "MUSICIAN"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/members/{{ _.userId }}"
+            name: Remover miembro del ministerio
+            meta:
+              id: req_b5197327bed6428392f863faf9947edc
+              created: 1774746782084
+              modified: 1774746782084
+              isPrivate: false
+              description: Elimina la membresía. Solo `ADMIN`. No puede remover el único ADMIN
+                activo.
+              sortKey: -1774746782084
+            method: DELETE
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/members/{{ _.userId }}/role"
+            name: Cambiar rol de un miembro
+            meta:
+              id: req_b8f736de8ed04a30b8c8ad5a21d9bc61
+              created: 1774746782085
+              modified: 1774914483607
+              isPrivate: false
+              description: >
+                Actualiza el rol del miembro. Solo `ADMIN`.
+
+                Reglas: no puede cambiarse el propio rol; debe quedar al menos
+                un ADMIN activo.
+
+                Emite Kafka `ministry.member.role.changed`.
+              sortKey: -1774746782085
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "role": "LEADER"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Invitations
+        meta:
+          id: fld_9d6427c5aab74fbf9272e27aeafb667c
+          created: 1774746782073
+          modified: 1774746821267
+          sortKey: -1774746818710
+          description: Invitaciones por email a nuevos miembros
+        children:
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/invitations"
+            name: Listar invitaciones activas
+            meta:
+              id: req_f9f5a7c0b53444d8a5ffc216d385bde3
+              created: 1774746782085
+              modified: 1774746782085
+              isPrivate: false
+              description: Muestra invitaciones en estado `PENDING`. Solo `ADMIN | LEADER`.
+              sortKey: -1774746782085
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/invitations"
+            name: Enviar invitación por email
+            meta:
+              id: req_8664207a95da4e9ab6452eb23209f8e9
+              created: 1774746782086
+              modified: 1774746782086
+              isPrivate: false
+              description: >
+                Crea una invitación y envía email al destinatario.
+
+                Si el email ya tiene cuenta, se procesa directamente al aceptar.
+
+                Si no tiene cuenta, el link de invitación lleva al registro +
+                aceptación.
+
+                Roles permitidos `ADMIN | LEADER`.
+              sortKey: -1774746782086
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "email": "user@example.com",
+                  "role": "MUSICIAN"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/invitations/{{ _.invitationId }}"
+            name: Cancelar invitación
+            meta:
+              id: req_ca87c986a495493dac134c24c14577d3
+              created: 1774746782086
+              modified: 1774746782086
+              isPrivate: false
+              description: Cancela una invitación pendiente. Solo `ADMIN | LEADER`.
+              sortKey: -1774746782086
+            method: DELETE
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/invitations/{{ _.token }}/accept"
+            name: Aceptar invitación
+            meta:
+              id: req_e40f3dd81b0640a2938efaebcacf861c
+              created: 1774746782087
+              modified: 1774746782087
+              isPrivate: false
+              description: >
+                Acepta la invitación y crea la membresía.
+
+                Requiere Bearer Token del usuario que acepta (debe existir
+                cuenta).
+
+                Emite Kafka `ministry.member.joined`.
+              sortKey: -1774746782087
+            method: POST
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/invitations/{{ _.token }}"
+            name: Validar token de invitación
+            meta:
+              id: req_ea33b948fcd74708a6f79894b96a179d
+              created: 1774746782087
+              modified: 1774746782087
+              isPrivate: false
+              description: Devuelve los datos del ministerio y rol ofrecido. Auth opcional (no
+                requerida).
+              sortKey: -1774746782087
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/invitations/{{ _.token }}/reject"
+            name: Rechazar invitación
+            meta:
+              id: req_6dbc1e0f3d2640828e3f7da87cacf24c
+              created: 1774746782088
+              modified: 1774746782088
+              isPrivate: false
+              description: Marca la invitación como rechazada. Auth opcional.
+              sortKey: -1774746782088
+            method: POST
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Settings
+        meta:
+          id: fld_3a3ec439889d4b6d9c8a4eda67c194ad
+          created: 1774746782074
+          modified: 1774746818633
+          sortKey: -1774746818610
+          description: Configuración operacional del ministerio
+        children:
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/settings"
+            name: Actualizar configuración
+            meta:
+              id: req_138fafed0ea94d6f971a3164ad0ec9f7
+              created: 1774746782089
+              modified: 1774746782089
+              isPrivate: false
+              description: Solo `ADMIN`.
+              sortKey: -1774746782089
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "maxMembers": 0,
+                  "invitationExpirationHours": 0,
+                  "notificationsEnabled": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/settings"
+            name: Configuración del ministerio
+            meta:
+              id: req_556c60508aa14baf88e6720add01cbc4
+              created: 1774746782089
+              modified: 1774746782089
+              isPrivate: false
+              description: ""
+              sortKey: -1774746782089
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Deletion Requests
+        meta:
+          id: fld_ff18aa19bb20cc21dd22ee23ff24aa25
+          created: 1775580000012
+          modified: 1775580000012
+          sortKey: -1774746818510
+          description: Solicitudes de eliminación de ministerio (flujo de aprobación)
+        children:
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/deletion-requests"
+            name: Solicitar eliminación del ministerio
+            meta:
+              id: req_aa19bb20cc21dd22ee23ff24aa25bb26
+              created: 1775580000013
+              modified: 1775580000013
+              isPrivate: false
+              description: |
+                El LEADER del ministerio solicita su eliminación.
+                Un sistema ADMIN deberá aprobar o rechazar.
+                Status inicial: PENDING.
+              sortKey: -1775580000013
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "reason": "El ministerio se fusionó con otro y ya no es necesario"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/ministries/{{ _.ministryId }}/deletion-requests"
+            name: Listar solicitudes del ministerio
+            meta:
+              id: req_bb20cc21dd22ee23ff24aa25bb26cc27
+              created: 1775580000014
+              modified: 1775580000014
+              isPrivate: false
+              description: |
+                Lista las solicitudes de eliminación del ministerio.
+                Requiere rol LEADER (del ministerio) o ADMIN (sistema).
+              sortKey: -1775580000014
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/deletion-requests"
+            name: Listar todas las solicitudes (Admin sistema)
+            meta:
+              id: req_cc21dd22ee23ff24aa25bb26cc27dd28
+              created: 1775580000015
+              modified: 1775580000015
+              isPrivate: false
+              description: |
+                Lista todas las solicitudes de eliminación por estado.
+                Solo ADMIN de sistema.
+                Status: PENDING, APPROVED, REJECTED, CANCELLED, COMPLETED.
+              sortKey: -1775580000015
+            method: GET
+            parameters:
+              - name: status
+                value: "PENDING"
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/deletion-requests/{{ _.deletionRequestId }}/approve"
+            name: Aprobar solicitud de eliminación
+            meta:
+              id: req_dd22ee23ff24aa25bb26cc27dd28ee29
+              created: 1775580000016
+              modified: 1775580000016
+              isPrivate: false
+              description: |
+                Aprueba y ejecuta la eliminación del ministerio.
+                Solo ADMIN de sistema. Acción irreversible.
+              sortKey: -1775580000016
+            method: POST
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/deletion-requests/{{ _.deletionRequestId }}/reject"
+            name: Rechazar solicitud de eliminación
+            meta:
+              id: req_ee23ff24aa25bb26cc27dd28ee29ff30
+              created: 1775580000017
+              modified: 1775580000017
+              isPrivate: false
+              description: |
+                Rechaza la solicitud de eliminación.
+                Solo ADMIN de sistema. El ministerio permanece activo.
+              sortKey: -1775580000017
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "reason": "El ministerio debe continuar operando"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+                disabled: false
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/deletion-requests/{{ _.deletionRequestId }}"
+            name: Cancelar solicitud de eliminación
+            meta:
+              id: req_ff24aa25bb26cc27dd28ee29ff30aa31
+              created: 1775580000018
+              modified: 1775580000018
+              isPrivate: false
+              description: |
+                El LEADER que hizo la solicitud puede cancelarla mientras esté PENDING.
+              sortKey: -1775580000018
+            method: DELETE
+            authentication:
+              type: bearer
+              token: "{{ _.bearerToken }}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_c7c61715902acf0c5b87f3c62eba3e5fecc30f53
+    created: 1768910736898
+    modified: 1775580000000
+environments:
+  name: Base Environment
+  meta:
+    id: env_c7c61715902acf0c5b87f3c62eba3e5fecc30f53
+    created: 1768910736897
+    modified: 1775580000000
+    isPrivate: false
+  data:
+    base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
+  subEnvironments:
+    - name: Local Environment
+      meta:
+        id: env_aa57eedb385a4a3b9ca8d7759cadd88e
+        created: 1768910790583
+        modified: 1768911125241
+        isPrivate: false
+        sortKey: 1768910790583
+      data:
+        domain: http://localhost:8080
+    - name: OpenAPI env local
+      meta:
+        id: env_3b66720b59eb453a814d69eec8a7af92
+        created: 1773619778840
+        modified: 1775580000000
+        isPrivate: false
+        sortKey: 1769499414115.125
+      data:
+        scheme: http
+        base_path: /api/v1
+        host: localhost:8083
+        bearerToken: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5ZjJjZmNjMi05NWYyLTQ4MWQtOGQwYi1kN2RiMjU3ZWQzZmEiLCJlbWFpbCI6InVzZXIuZHJ1bXNAZ21haWwuY29tIiwicm9sZSI6Ik1VU0lDSUFOIiwiaWF0IjoxNzc1MTQwMDMzLCJleHAiOjE3NzUyMjY0MzN9.rCXrvHqqNVFlQgvO6g1N86bTCeHkFxy4AYiCZwP9mNYud3q0wKJmR4-iKQQcS0LeV0CW3b7bhy_gQknnZJDDAw
+        refreshToken: ""
+        token: ""
+        deletionRequestId: ""
+        id: 933398b2-cd35-4432-9dba-3808ee0c8a0e
+        idSong: f5e75f93-93cd-4bde-9223-cc0e25025f1c
+        refId: 04165e60-985d-48ae-901b-2d5363fdd42d
+        idRef: e4caf934-dbfe-4a49-95d5-69b5769b3884
+        tag:
+          - gospel
+        trackType: ""
+        userId: 9f2cfcc2-95f2-481d-8d0b-d7db257ed3fa
+        chordsId: 752db223-4bca-4494-90b2-d5c982ce2d69
+        noteId: 1a1a5ecd-eef7-4397-8cbd-9e5b1a4e4a56
+        ministryId: e45136f8-bb4a-407a-b336-6ca63eb8f8f5
+        idMinistry: a684bbf0-9103-4527-9bfa-9cf6cce1a767
+        invitationId: ""
+    - name: OpenAPI env localhost:8085
+      meta:
+        id: env_7b6a0ae5bb354210b47c290ed60a7e04
+        created: 1774537914102
+        modified: 1774745749129
+        isPrivate: false
+        sortKey: 1774537914102
+      data:
+        scheme: http
+        base_path: /api/v1
+        host: localhost:8085
+        bearerToken: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIwZjNlOGE1MC0wZWM4LTQwZTEtYmQyOS02ZWI3MjY0YzUwNTEiLCJlbWFpbCI6InVzZXIuZHJ1bXNAZ21haWwuY29tIiwicm9sZSI6Ik1VU0lDSUFOIiwiaWF0IjoxNzc0NzM5MjQ5LCJleHAiOjE3NzQ4MjU2NDl9.94Q0D3xSw9gpvQxjRURp3IBZq3t5cbYtsXABUEIa-jDOknuIxg5rGvjDtWZeRtkNwzIigZewky_GiM9UN759fQ
+    - name: OpenAPI env localhost:8085
+      meta:
+        id: env_99b9f9693dfa4d499f9d23234a1d2cf1
+        created: 1774555422861
+        modified: 1774555422861
+        isPrivate: false
+        sortKey: 1774555422861
+      data:
+        scheme: http
+        base_path: /api/v1
+        host: localhost:8085
+        bearerToken: bearerToken
+    - name: OpenAPI env localhost:8082
+      meta:
+        id: env_1e457c34be0a42048e16c27c00274c5c
+        created: 1774746782071
+        modified: 1774746782071
+        isPrivate: false
+        sortKey: 1774746782071
+      data:
+        scheme: http
+        base_path: /api/v1
+        host: localhost:8082
+        bearerToken: bearerToken
