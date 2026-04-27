@@ -720,6 +720,122 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals/{{ _.id }}"
+        name: Detalle de un ensayo
+        meta:
+          id: req_aa31bb32cc33dd34ee35ff36aa37bb38
+          created: 1775580100001
+          modified: 1775580100001
+          isPrivate: false
+          description: |
+            Retorna el detalle de un ensayo por ID.
+            Incluye fecha, hora, ubicación, estado de confirmación y asistentes.
+          sortKey: -1774267752263
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals/{{ _.id }}/songs"
+        name: Canciones del ensayo
+        meta:
+          id: req_bb32cc33dd34ee35ff36aa37bb38cc39
+          created: 1775580100002
+          modified: 1775580100002
+          isPrivate: false
+          description: |
+            Lista todas las canciones asignadas a un ensayo.
+            Retorna id, songId, songTitle, usedKey y createdAt de cada asignación.
+          sortKey: -1774267752262
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals/{{ _.id }}/songs"
+        name: Asignar canción al ensayo
+        meta:
+          id: req_cc33dd34ee35ff36aa37bb38cc39dd40
+          created: 1775580100003
+          modified: 1775580100003
+          isPrivate: false
+          description: |
+            Asigna una canción al ensayo con título y tonalidad opcionales (denormalizados).
+            El ministryId se toma del JWT. Retorna el registro de uso creado.
+          sortKey: -1774267752261
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "songId": "{{ _.idSong }}",
+              "songTitle": "Rindo Todo",
+              "usedKey": "G"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            const usageId = response.id;
+            if (usageId) {
+              insomnia.environment.set("usageId", usageId);
+              console.log("usageId guardado: " + usageId);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/rehearsals/{{ _.id }}/songs/{{ _.usageId }}"
+        name: Quitar canción del ensayo
+        meta:
+          id: req_dd34ee35ff36aa37bb38cc39dd40ee41
+          created: 1775580100004
+          modified: 1775580100004
+          isPrivate: false
+          description: |
+            Elimina la asignación de una canción a un ensayo usando el usageId.
+            Retorna 204 No Content. Lanza 404 si el usageId no existe.
+          sortKey: -1774267752260
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
   - name: Calendar - Events
     meta:
       id: fld_fa7f91c0b5854e8c9e4fd45897266f62
